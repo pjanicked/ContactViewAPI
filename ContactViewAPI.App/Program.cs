@@ -21,6 +21,10 @@ namespace ContactViewAPI.App
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureLogging(options => {
+                    options.ClearProviders();
+                    options.AddConsole();
                 });
     }
 }
