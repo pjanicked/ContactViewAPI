@@ -1,21 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using AutoMapper;
+using ContactViewAPI.App.Helpers.Auth;
+using ContactViewAPI.App.Helpers.Swagger;
 using ContactViewAPI.Data;
+using ContactViewAPI.Service.DependencyInjection;
+using ContactViewAPI.Service.Email;
+using ContactViewAPI.Service.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace ContactViewAPI.App
 {
@@ -31,17 +30,24 @@ namespace ContactViewAPI.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
+            services.Configure<EmailOptions>(Configuration.GetSection("EmailOptions"));
 
             services.AddDbContext<ContactDbContext>(options =>
             {
                 options.UseNpgsql(Configuration.GetConnectionString("Default"));
             });
 
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "ContactView", Version = "v1" });
-            });
+            services.AddContactViewDependencies();            
+
+            services.AddAuth(Configuration.GetSection("Jwt").Get<JwtOptions>());
+
+            services.AddCustomSwagger();            
+
+            services.AddAutoMapper(typeof(Startup));           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,7 +80,7 @@ namespace ContactViewAPI.App
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuth();
 
             app.UseEndpoints(endpoints =>
             {
