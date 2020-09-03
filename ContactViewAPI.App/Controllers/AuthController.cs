@@ -101,6 +101,56 @@
             }
 
             return BadRequest("Email or password incorrect.");
-        }        
+        }
+        
+        [HttpPost("forgotpassword")]
+        public async Task<IActionResult> ForgotPassword(UserForgotPasswordDto userForgotPassword)
+        {
+            var user = await  _userManager.FindByEmailAsync(userForgotPassword.Email);
+            if(user is null)
+            {
+                return NotFound("User not found");
+            }
+
+            var emailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var forgotPasswordLink = "Hi, Please click on this link to reset your password " +
+                Url.Action(nameof(GenerateResetPassword), "Auth",
+                new { emailToken, email = user.Email }, Request.Scheme);
+
+            var message = new Message(new string[] { user.Email }, "Reset Password Link", forgotPasswordLink, null);
+            await _emailSender.SendEmailAsync(message);
+
+            return Ok();
+        }
+
+        [HttpGet("resetpassword")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IActionResult GenerateResetPassword(string emailToken, string email)
+        {
+            return Ok(new
+            {
+                emailToken,
+                email
+            });
+        }
+
+        [HttpPost("resetpassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+
+            if (user is null)
+            {
+                return NotFound("User not found");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest(result.Errors);
+        }
     }
 }
