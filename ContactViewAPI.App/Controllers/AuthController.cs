@@ -5,6 +5,7 @@
     using ContactViewAPI.Data.Models;
     using ContactViewAPI.Service.Email;
     using ContactViewAPI.Service.Identity;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using System.Linq;
@@ -151,6 +152,34 @@
             }
 
             return BadRequest(result.Errors);
+        }
+
+        [Authorize]
+        [HttpPost("changepassword")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto changePassword)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            IdentityResult result;
+            if (changePassword.OldPassword is null)
+            {
+                result = await _userManager.AddPasswordAsync(user, changePassword.NewPassword);
+            }
+            else
+            {
+                result = await _userManager.ChangePasswordAsync(user, changePassword.OldPassword, changePassword.NewPassword);
+            }
+
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest(result.Errors);            
         }
     }
 }

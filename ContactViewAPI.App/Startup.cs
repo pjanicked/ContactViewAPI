@@ -1,6 +1,7 @@
 using System.Net;
 using AutoMapper;
 using ContactViewAPI.App.Helpers.Auth;
+using ContactViewAPI.App.Helpers.Common;
 using ContactViewAPI.App.Helpers.Swagger;
 using ContactViewAPI.Data;
 using ContactViewAPI.Service.DependencyInjection;
@@ -69,7 +70,7 @@ namespace ContactViewAPI.App
                         if (error != null)
                         {
                             logger.LogError(error.Error, error.Error.Message);
-                            //context.Response.AddAppError(error.Error.Message);
+                            context.Response.AddAppError(error.Error.Message);
                             await context.Response.WriteAsync(error.Error.Message);
                         }
                     });
