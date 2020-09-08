@@ -11,7 +11,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
