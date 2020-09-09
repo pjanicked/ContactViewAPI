@@ -56,5 +56,11 @@
 
             return Ok(contactToReturn);
         }
+
+        [HttpGet("test")]
+        public IActionResult TestAction()
+        {
+            return Ok(new string("just a test endpoint"));
+        }
     }
 }
