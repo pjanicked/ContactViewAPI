@@ -7,6 +7,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     [Route("api/contact")]
@@ -52,15 +53,57 @@
             }
 
             var contact = await _contactService.GetContactById(Id, user.Id);
-            var contactToReturn = _mapper.Map<Contact, ContactToReturnDto>(contact);
 
-            return Ok(contactToReturn);
+            return Ok(_mapper.Map<Contact, ContactToReturnDto>(contact));
         }
 
         [HttpGet("test")]
         public IActionResult TestAction()
         {
             return Ok(new string("just a test endpoint"));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllContactsByUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var contacts = await _contactService.GetAllContactsByUserId(user.Id);
+
+            return Ok(_mapper.Map<IEnumerable<Contact>, IEnumerable<ContactToReturnDto>>(contacts));
+        }
+
+        [HttpPut("{Id}")]
+        public async Task<IActionResult> UpdateContact(int? Id, ContactUpdateDto contactUpdateDto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var contact = _mapper.Map<ContactUpdateDto, Contact>(contactUpdateDto);
+            contact.Id = (int)Id;
+            await _contactService.UpdateAsync(contact, user.Id);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> DeleteContact(int? Id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            await _contactService.DeleteAsync(Id, user.Id);
+            return NoContent();
         }
     }
 }

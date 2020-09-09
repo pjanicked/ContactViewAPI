@@ -33,8 +33,7 @@
 
             _dbContext.Contacts.Remove(dbContact);
             await _dbContext.SaveChangesAsync();
-            return true;
-          
+            return true;          
         }
 
         public async Task<List<Contact>> GetAllContactsByUserId(int? userId)
@@ -83,7 +82,7 @@
 
             foreach (var childUpdateModel in contact.Notes.ToList())
             {
-                var dbNote = dbContact.Notes.SingleOrDefault(n => n.Id == childUpdateModel.Id);
+                var dbNote = dbContact.Notes.SingleOrDefault(n => n.Id == childUpdateModel.Id && n.Id != 0);
                 if (dbNote != null)
                 {
                     dbNote.NoteText = childUpdateModel.NoteText;
@@ -105,7 +104,7 @@
 
         private async Task<Contact> ValidateAsync(int? contactId, int? userId)
         {
-            if (contactId is null)
+            if (contactId is null || contactId <= 0)
                 throw new Exception("contactId cannot be null");
 
             var dbContact = await _dbContext.Contacts.Include(n => n.Notes).FirstOrDefaultAsync(c => c.Id == contactId);
@@ -114,9 +113,7 @@
                 throw new Exception("this contact does not exist");
 
             if (dbContact.UserId != userId)
-            {
                 throw new Exception("This user is not the owner of contact Id");
-            }
 
             return dbContact;
         }

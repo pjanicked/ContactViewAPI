@@ -3,6 +3,7 @@
     using AutoMapper;
     using ContactViewAPI.App.Dtos.Auth;
     using ContactViewAPI.App.Dtos.Contact;
+    using ContactViewAPI.App.Dtos.Note;
     using ContactViewAPI.Data.Models;
 
     public class AutoMapperProfile : Profile
@@ -23,6 +24,14 @@
             CreateMap<Contact, ContactToReturnDto>();
             CreateMap<ContactToReturnDto, Contact>();
 
+            CreateMap<Contact, ContactUpdateDto>();
+            CreateMap<ContactUpdateDto, Contact>();
+
+            CreateMap<Note, NoteToReturnDto>();
+            CreateMap<NoteToReturnDto, Note>();
+
+            CreateMap<Note, NoteUpdateDto>();
+            CreateMap<NoteUpdateDto, Note>();
         }
     }
 }
