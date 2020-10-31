@@ -33,7 +33,7 @@ namespace ContactViewAPI.App
         {
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
+            services.AddCors();
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
             services.Configure<EmailOptions>(Configuration.GetSection("EmailOptions"));
 
@@ -76,9 +76,9 @@ namespace ContactViewAPI.App
                     });
                 });
             }
-
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseAuth();
@@ -87,7 +87,7 @@ namespace ContactViewAPI.App
             {
                 endpoints.MapControllers();
             });
-
+            
             app.UseSwagger();
 
             app.UseSwaggerUI(options =>

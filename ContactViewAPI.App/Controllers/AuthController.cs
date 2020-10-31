@@ -73,7 +73,7 @@
             var result = await _userManager.ConfirmEmailAsync(user, emailToken);
             if(result.Succeeded)
             {
-                return Ok(_userService.GenerateJwt(user));
+                return Content("<html><body><br/><h2>Thank you for confirming your email! Please <a href='http://localhost:4200/login'>Login</a> to continue</h2></body></html>", "text/html");
             }
 
             return BadRequest(result.Errors);
@@ -98,7 +98,10 @@
 
             if (userSigninResult)
             {
-                return Ok(_userService.GenerateJwt(user));
+                return Ok(new 
+                { 
+                    Token = _userService.GenerateJwt(user)
+                });
             }
 
             return BadRequest("Email or password incorrect.");
