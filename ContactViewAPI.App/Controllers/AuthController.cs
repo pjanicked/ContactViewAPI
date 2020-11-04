@@ -131,11 +131,8 @@
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult GenerateResetPassword(string emailToken, string email)
         {
-            return Ok(new
-            {
-                emailToken,
-                email
-            });
+
+            return Content($"<html><body><br/><h2> Please Reset your password here, <a href='http://localhost:4200/resetpassword?token={emailToken}&email={email}'>Reset</a></h2></body></html>", "text/html");
         }
 
         [HttpPost("resetpassword")]
