@@ -2,12 +2,15 @@
 {
     using AutoMapper;
     using ContactViewAPI.App.Dtos.Contact;
+    using ContactViewAPI.App.Helpers.Common;
     using ContactViewAPI.Data.Models;
     using ContactViewAPI.Service.Contact;
+    using ContactViewAPI.Service.Contact.Pagination;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading.Tasks;
 
     [Route("api/contact")]
@@ -64,17 +67,16 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllContactsByUser()
+        public async Task<IActionResult> GetAllContactsByUser([FromQuery] UserParams userParams)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user is null)
-            {
-                return BadRequest();
-            }
+            int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            userParams.UserId = currentUserId;
 
-            var contacts = await _contactService.GetAllContactsByUserId(user.Id);
+            var contacts = await _contactService.GetAllContactsByUserId(userParams);
+            var contactsToReturn = _mapper.Map<IEnumerable<ContactToListDto>>(contacts);
+            Response.AddPaginationHeader(contacts.CurrentPage, contacts.PageSize, contacts.TotalPages, contacts.TotalCount);
 
-            return Ok(_mapper.Map<IEnumerable<Contact>, IEnumerable<ContactToReturnDto>>(contacts));
+            return Ok(contactsToReturn);
         }
 
         [HttpPut("{Id}")]

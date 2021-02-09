@@ -24,6 +24,10 @@
             CreateMap<Contact, ContactToReturnDto>();
             CreateMap<ContactToReturnDto, Contact>();
 
+            CreateMap<Contact, ContactToListDto>()
+                .ForMember(m => m.NumberOfNotes, opt => opt.MapFrom(ur => ur.Notes.Count));
+            CreateMap<ContactToListDto, Contact>();
+
             CreateMap<Contact, ContactUpdateDto>();
             CreateMap<ContactUpdateDto, Contact>();
 
