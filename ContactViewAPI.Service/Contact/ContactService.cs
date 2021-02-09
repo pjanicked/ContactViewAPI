@@ -2,9 +2,9 @@
 {
     using ContactViewAPI.Data;
     using ContactViewAPI.Data.Models;
+    using ContactViewAPI.Service.Contact.Pagination;
     using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -36,12 +36,23 @@
             return true;          
         }
 
-        public async Task<List<Contact>> GetAllContactsByUserId(int? userId)
+        public async Task<PagedList<Contact>> GetAllContactsByUserId(UserParams userParams)
         {
-            if (userId is null)
-                throw new Exception("No such user");
+            var contacts = _dbContext.Contacts
+                .Include(i => i.Notes)
+                .OrderByDescending(o => o.CreatedAt)
+                .Where(c => c.UserId == userParams.UserId).AsQueryable();
 
-            return await _dbContext.Contacts.Where(c => c.UserId == userId).ToListAsync();
+            if (!string.IsNullOrEmpty(userParams.OrderBy))
+            {
+                contacts = userParams.OrderBy switch
+                {
+                    "updated" => contacts.OrderByDescending(u => u.UpdatedAt),
+                    _ => contacts.OrderByDescending(u => u.CreatedAt),
+                };
+            }
+
+            return await PagedList<Contact>.CreateAsync(contacts, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<Contact> GetContactById(int? contactId, int? userId)

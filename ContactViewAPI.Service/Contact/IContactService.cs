@@ -1,6 +1,6 @@
 ﻿namespace ContactViewAPI.Service.Contact
 {
-    using System.Collections.Generic;
+    using ContactViewAPI.Service.Contact.Pagination;
     using System.Threading.Tasks;
 
     public interface IContactService
@@ -13,6 +13,6 @@
 
         Task<Data.Models.Contact> GetContactById(int? contactId, int? userId);
 
-        Task<List<Data.Models.Contact>> GetAllContactsByUserId(int? userId);
+        Task<PagedList<Data.Models.Contact>> GetAllContactsByUserId(UserParams userParams);
     }
 }
