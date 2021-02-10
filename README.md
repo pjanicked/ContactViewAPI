@@ -8,6 +8,6 @@ https://contactviewapi.herokuapp.com/index.html
 
 The API provides endpoints for CRUD of Contacts, Notes, Projects related to them, Tasks related to that project
 
-Design File for the App - https://www.fluidui.com/editor/live/preview/cF9TRE1jbmJEblZXZEtMeUlsOVRkeGYyb0FjNjJkQVUwZw==
-
 Technologies & Tools Used - .Net Core 3.1, Ef Core 3.1, Identity, AutoMapper, MailKit, Github Actions, Heroku
+
+Frontend for the app is at https://github.com/pjanicked/ContactView
