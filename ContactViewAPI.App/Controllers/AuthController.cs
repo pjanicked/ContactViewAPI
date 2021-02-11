@@ -73,7 +73,7 @@
             var result = await _userManager.ConfirmEmailAsync(user, emailToken);
             if(result.Succeeded)
             {
-                return Content("<html><body><br/><h2>Thank you for confirming your email! Please <a href='http://localhost:4200/login'>Login</a> to continue</h2></body></html>", "text/html");
+                return Content("<html><body><br/><h2>Thank you for confirming your email! Please <a href='https://contactview.herokuapp.com/login'>Login</a> to continue</h2></body></html>", "text/html");
             }
 
             return BadRequest(result.Errors);
@@ -132,7 +132,7 @@
         public IActionResult GenerateResetPassword(string emailToken, string email)
         {
 
-            return Content($"<html><body><br/><h2> Please Reset your password here, <a href='http://localhost:4200/resetpassword?token={emailToken}&email={email}'>Reset</a></h2></body></html>", "text/html");
+            return Content($"<html><body><br/><h2> Please Reset your password here, <a href='https://contactview.herokuapp.com/resetpassword?token={emailToken}&email={email}'>Reset</a></h2></body></html>", "text/html");
         }
 
         [HttpPost("resetpassword")]
