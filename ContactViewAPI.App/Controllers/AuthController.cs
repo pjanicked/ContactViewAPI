@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Mvc;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Web;
 
     [Route("api/auth")]
     [ApiController]
@@ -116,7 +117,8 @@
                 return NotFound("User not found");
             }
 
-            var emailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var rawEmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var emailToken = HttpUtility.UrlEncode(rawEmailToken);
             var forgotPasswordLink = "Hi, Please click on this link to reset your password " +
                 Url.Action(nameof(GenerateResetPassword), "Auth",
                 new { emailToken, email = user.Email }, Request.Scheme);
