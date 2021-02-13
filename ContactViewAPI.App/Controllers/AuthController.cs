@@ -117,8 +117,8 @@
                 return NotFound("User not found");
             }
 
-            var rawEmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var emailToken = HttpUtility.UrlEncode(rawEmailToken);
+            var rawToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var emailToken = HttpUtility.UrlEncode(rawToken);
             var forgotPasswordLink = "Hi, Please click on this link to reset your password " +
                 Url.Action(nameof(GenerateResetPassword), "Auth",
                 new { emailToken, email = user.Email }, Request.Scheme);
